@@ -1,0 +1,82 @@
+msg.chat.id => chat id
+msg.message_id => message id
+
+query Object Structure : 
+{
+  message_id: 203,
+  from: {
+    id: 7345638762,
+    is_bot: true,
+    first_name: 'test_bot',
+    username: 'Barman2980Bot'
+  },
+  chat: {
+    id: 5417774567,
+    first_name: 'Deepshikha',
+    last_name: 'Mishra',
+    username: 'deepshikha_mishra_090',
+    type: 'private'
+  },
+  date: 1739652792,
+  photo: [
+    {
+      file_id: 'AgACAgUAAxkDAANVZ6965AkCoCGQA2Vm-LDynkTuAAFwAAI0wDEb-kaAVW_2cr5a8RXnAQADAgADcwADNgQ',      
+      file_unique_id: 'AQADNMAxG_pGgFV4',
+      file_size: 598,
+      width: 90,
+      height: 40
+    },
+    {
+      file_id: 'AgACAgUAAxkDAANVZ6965AkCoCGQA2Vm-LDynkTuAAFwAAI0wDEb-kaAVW_2cr5a8RXnAQADAgADbQADNgQ',      
+      file_unique_id: 'AQADNMAxG_pGgFVy',
+      file_size: 6992,
+      width: 320,
+      height: 142
+    },
+    {
+      file_id: 'AgACAgUAAxkDAANVZ6965AkCoCGQA2Vm-LDynkTuAAFwAAI0wDEb-kaAVW_2cr5a8RXnAQADAgADeAADNgQ',      
+      file_unique_id: 'AQADNMAxG_pGgFV9',
+      file_size: 38024,
+      width: 800,
+      height: 355
+    },
+    {
+      file_id: 'AgACAgUAAxkDAANVZ6965AkCoCGQA2Vm-LDynkTuAAFwAAI0wDEb-kaAVW_2cr5a8RXnAQADAgADeQADNgQ',      
+      file_unique_id: 'AQADNMAxG_pGgFV-',
+      file_size: 93296,
+      width: 1280,
+      height: 568
+    },
+    {
+      file_id: 'AgACAgUAAxkDAANVZ6965AkCoCGQA2Vm-LDynkTuAAFwAAI0wDEb-kaAVW_2cr5a8RXnAQADAgADdwADNgQ',      
+      file_unique_id: 'AQADNMAxG_pGgFV8',
+      file_size: 175054,
+      width: 1920,
+      height: 852
+    }
+  ],
+  caption: '🛒 Your selection:\n' +
+    '            └ 1x Full RuPro Access\n' +
+    '            └ 1x Custom Bot\n' +
+    '            └ 1x Month Access\n' +
+    '\n' +
+    '            💰 Total: 0.20Ξ\n' +
+    '\n' +
+    '            In order to proceed with your payment:\n' +
+    '            Please send 0.20Ξ to the address below:\n' +
+    '\n' +
+    '            👉 0x871DA0aA6a9Cc4G20F2809aEbEA818B3Ada8e92E\n' +
+    '\n' +
+    '            Once payment is detected, you will receive invite links to all channels and bots.\n' +    
+    '\n' +
+    '            ⚠️ Make sure to send Ethereum using ETH or BASE networks only.',
+  caption_entities: [
+    { offset: 3, length: 15, type: 'bold' },
+    { offset: 128, length: 6, type: 'bold' },
+    { offset: 217, length: 5, type: 'code' },
+    { offset: 261, length: 42, type: 'code' },
+    { offset: 448, length: 3, type: 'bold' },
+    { offset: 455, length: 4, type: 'bold' }
+  ],
+  reply_markup: { inline_keyboard: [ [Array], [Array], [Array], [Array], [Array] ] }
+}
