@@ -2,7 +2,6 @@
 const { ethers } = require('ethers');
 const { config } = require('./config');
 
-// Define possible transaction states for better tracking
 const TransactionState = {
     WAITING: 'WAITING',
     FOUND_INCORRECT_AMOUNT: 'FOUND_INCORRECT_AMOUNT',
@@ -11,17 +10,23 @@ const TransactionState = {
 };
 
 class TransactionMonitor {
-    constructor(rpcUrl) {
-        console.log('🚀 Initializing Transaction Monitor...');
+    constructor(rpcUrl, bot, chatId, messageId) {
         this.provider = new ethers.JsonRpcProvider(rpcUrl);
         this.startBlockNumber = 0;
         this.blocksChecked = 0;
         this.isDestroyed = false;
         this.foundTransactions = [];
+        this.bot = bot;
+        this.chatId = chatId;
+        this.messageId = messageId;
     }
 
     async monitorTransaction(senderAddress) {
-        console.log('\n📝 Validating inputs...');
+        await this.bot.editMessageText("🚀 Initializing Transaction Monitor...\n📝 Validating inputs...", {
+            chat_id: this.chatId,
+            message_id: this.messageId,
+        });
+        
         if (!ethers.isAddress(senderAddress)) {
             throw new Error('Invalid sender address format');
         }
@@ -34,19 +39,22 @@ class TransactionMonitor {
         };
 
         const expectedAmountWei = ethers.parseEther(criteria.expectedAmount);
-        console.log(`💰 Expected amount in Wei: ${expectedAmountWei.toString()}`);
-        
         const network = await this.provider.getNetwork();
-        console.log(`\n🌐 Connected to network: ${network.name}`);
-        console.log(`🔗 Chain ID: ${network.chainId}`);
-        
         this.startBlockNumber = await this.provider.getBlockNumber();
-        console.log('\n🔍 Starting transaction monitoring:');
-        console.log(`   - Starting from block: ${this.startBlockNumber}`);
-        console.log(`   - Expected amount: ${criteria.expectedAmount} ETH`);
-        console.log(`   - From address: ${criteria.senderAddress}`);
-        console.log(`   - To address: ${criteria.recipientAddress}`);
-        console.log(`   - Will monitor for ${criteria.maxBlocksToWait} blocks`);
+
+        await this.bot.editMessageText(
+            `💰 Expected amount: ${criteria.expectedAmount} ETH\n\n` +
+            `🌐 Network: ${network.name}\n` +
+            `🔗 Chain ID: ${network.chainId}\n\n` +
+            `🔍 Transaction Details:\n` +
+            `   From: ${criteria.senderAddress}\n` +
+            `   To: ${criteria.recipientAddress}\n` +
+            `   Monitoring for ${criteria.maxBlocksToWait} blocks\n\n` +
+            `⏳ Waiting for transaction...`, {
+                chat_id: this.chatId,
+                message_id: this.messageId,
+            }
+        );
 
         return new Promise((resolve, reject) => {
             let isResolved = false;
@@ -58,21 +66,41 @@ class TransactionMonitor {
                     const block = await this.provider.getBlock(blockNumber);
                     if (!block) return;
 
-                    console.log(`\n📦 Checking block ${blockNumber} (${this.blocksChecked + 1}/${criteria.maxBlocksToWait})`);
                     this.blocksChecked++;
+                    await this.bot.editMessageText(
+                        `🔍 Monitoring Transactions...\n` +
+                        `📦 Block ${blockNumber} (${this.blocksChecked}/${criteria.maxBlocksToWait})\n` +
+                        `⏳ Please wait...`, {
+                            chat_id: this.chatId,
+                            message_id: this.messageId,
+                        }
+                    );
 
                     if (this.blocksChecked > criteria.maxBlocksToWait) {
-                        console.log('\n⏰ Maximum block limit reached!');
                         if (this.foundTransactions.length > 0) {
-                            console.log('\n💡 Found transactions with incorrect amounts:');
-                            this.foundTransactions.forEach(tx => {
-                                console.log(`   Hash: ${tx.hash}`);
-                                console.log(`   Amount: ${tx.amount} ETH`);
-                            });
+                            const txMessages = this.foundTransactions.map(tx => 
+                                `   Hash: ${tx.hash}\n   Amount: ${tx.amount} ETH`
+                            ).join('\n\n');
+                            
+                            await this.bot.editMessageText(
+                                `⚠️ Time Limit Reached!\n\n` +
+                                `Found transactions with incorrect amounts:\n${txMessages}\n\n` +
+                                `Expected: ${criteria.expectedAmount} ETH`, {
+                                    chat_id: this.chatId,
+                                    message_id: this.messageId,
+                                }
+                            );
                             cleanup();
                             resolve(TransactionState.FOUND_INCORRECT_AMOUNT);
                         } else {
-                            console.log('\n❌ No transactions found from sender.');
+                            await this.bot.editMessageText(
+                                "❌ Time Limit Reached!\n" +
+                                "No transactions found from your address.\n" +
+                                "Please try again or contact support.", {
+                                    chat_id: this.chatId,
+                                    message_id: this.messageId,
+                                }
+                            );
                             cleanup();
                             resolve(TransactionState.TIMEOUT);
                         }
@@ -80,8 +108,6 @@ class TransactionMonitor {
                     }
 
                     if (block.transactions) {
-                        console.log(`   Found ${block.transactions.length} transactions in this block`);
-                        
                         for (const txHash of block.transactions) {
                             if (this.isDestroyed || isResolved) return;
 
@@ -89,17 +115,28 @@ class TransactionMonitor {
                                 const tx = await this.provider.getTransaction(txHash);
                                 if (!tx) continue;
 
-                                // Check if this transaction is from our sender
                                 if (tx.from.toLowerCase() === criteria.senderAddress.toLowerCase() &&
                                     tx.to?.toLowerCase() === criteria.recipientAddress.toLowerCase()) {
                                     
                                     const amountInEth = ethers.formatEther(tx.value);
-                                    console.log('\n🔎 Found relevant transaction:');
-                                    console.log(`   Hash: ${tx.hash}`);
-                                    console.log(`   Amount: ${amountInEth} ETH`);
+                                    await this.bot.editMessageText(
+                                        `🔎 Transaction Detected!\n` +
+                                        `   Hash: ${tx.hash}\n` +
+                                        `   Amount: ${amountInEth} ETH`, {
+                                            chat_id: this.chatId,
+                                            message_id: this.messageId,
+                                        }
+                                    );
 
                                     if (tx.value < expectedAmountWei) {
-                                        console.log('   ⚠️ Amount is less than expected!');
+                                        await this.bot.editMessageText(
+                                            "⚠️ Amount is less than expected!\n" +
+                                            `Expected: ${criteria.expectedAmount} ETH\n` +
+                                            `Received: ${amountInEth} ETH`, {
+                                                chat_id: this.chatId,
+                                                message_id: this.messageId,
+                                            }
+                                        );
                                         this.foundTransactions.push({
                                             hash: tx.hash,
                                             amount: amountInEth
@@ -108,34 +145,61 @@ class TransactionMonitor {
                                     }
 
                                     if (tx.value >= expectedAmountWei) {
-                                        console.log('\n✨ Transaction matches criteria! Waiting for confirmations...');
+                                        await this.bot.editMessageText(
+                                            "✨ Transaction amount matches!\n" +
+                                            "Waiting for confirmation...", {
+                                                chat_id: this.chatId,
+                                                message_id: this.messageId,
+                                            }
+                                        );
                                         try {
                                             const receipt = await tx.wait(config.confirmations);
                                             if (receipt) {
-                                                console.log('\n🎉 Transaction confirmed!');
-                                                console.log(`   Final block number: ${receipt.blockNumber}`);
-                                                console.log(`   Gas used: ${receipt.gasUsed.toString()}`);
-                                                console.log(`   Transaction hash: ${tx.hash}`);
+                                                await this.bot.editMessageText(
+                                                    `✅ Transaction Confirmed!\n\n` +
+                                                    `Amount: ${amountInEth} ETH\n` +
+                                                    `Block: ${receipt.blockNumber}\n` +
+                                                    `Gas Used: ${receipt.gasUsed.toString()}\n` +
+                                                    `Hash: ${tx.hash}`, {
+                                                        chat_id: this.chatId,
+                                                        message_id: this.messageId,
+                                                    }
+                                                );
                                                 cleanup();
                                                 isResolved = true;
                                                 resolve(TransactionState.FOUND_CORRECT_AMOUNT);
                                                 return;
                                             }
                                         } catch (waitError) {
-                                            console.error('\n⚠️ Error waiting for confirmation:', waitError);
+                                            await this.bot.editMessageText(
+                                                `⚠️ Confirmation Error: ${waitError.message}`, {
+                                                    chat_id: this.chatId,
+                                                    message_id: this.messageId,
+                                                }
+                                            );
                                         }
                                     }
                                 }
                             } catch (txError) {
                                 if (!this.isDestroyed) {
-                                    console.error('   ⚠️ Error processing transaction:', txError);
+                                    await this.bot.editMessageText(
+                                        `⚠️ Transaction Error: ${txError.message}`, {
+                                            chat_id: this.chatId,
+                                            message_id: this.messageId,
+                                        }
+                                    );
                                 }
                             }
                         }
                     }
                 } catch (error) {
                     if (!this.isDestroyed) {
-                        console.error('\n❌ Error processing block:', error);
+                        await this.bot.editMessageText(
+                            `❌ Error: ${error.message}`, {
+                                chat_id: this.chatId,
+                                message_id: this.messageId,
+                            }
+                        );
                         cleanup();
                         reject(error);
                     }
@@ -150,11 +214,17 @@ class TransactionMonitor {
 
             this.provider.on('block', blockHandler);
 
-            // Set a timeout for the entire operation
-            const timeout = criteria.maxBlocksToWait * 15 * 1000; // 15 seconds per block
+            const timeout = criteria.maxBlocksToWait * 15 * 1000;
             setTimeout(() => {
                 if (!isResolved) {
-                    console.log('\n⏰ Operation timed out!');
+                    this.bot.editMessageText(
+                        "⏰ Monitoring Timeout!\n" +
+                        "No matching transaction found.\n" +
+                        "Please try again or contact support.", {
+                            chat_id: this.chatId,
+                            message_id: this.messageId,
+                        }
+                    );
                     cleanup();
                     resolve(TransactionState.TIMEOUT);
                 }
@@ -163,14 +233,16 @@ class TransactionMonitor {
     }
 
     async destroy() {
-        console.log('\n🧹 Cleaning up monitor resources...');
+        await this.bot.editMessageText("🧹 Cleaning up...", {
+            chat_id: this.chatId,
+            message_id: this.messageId,
+        });
         this.isDestroyed = true;
         await new Promise(resolve => setTimeout(resolve, 100));
         this.provider.removeAllListeners();
         if (typeof this.provider.destroy === 'function') {
             await this.provider.destroy();
         }
-        console.log('✅ Cleanup completed');
     }
 }
 

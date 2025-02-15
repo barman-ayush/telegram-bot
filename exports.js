@@ -5,7 +5,7 @@ module.exports = {
     polling: {
       params: {
         offset: -1,
-        timeout: 30,
+        timeout: 60,
       },
       interval: 2000,
       autoStart: true,

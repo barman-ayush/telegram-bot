@@ -2,7 +2,7 @@ const product_1_selection_menu = require("./reproAccess");
 const store = require("../db/store");
 const { changeQuantity } = require("./cartHandler");
 const { KEYBOARD_BUTTONS, MESSAGE_TEMPLATES } = require("../utils/constants");
-
+const {transactionInitiator} = require("./transactionController");
 
 const callbackHandler = async (bot, query) => {
   const chatId = query.message.chat.id;
@@ -24,6 +24,9 @@ const callbackHandler = async (bot, query) => {
       break;
     case "inc_month":
       await changeQuantity(bot, chatId, +1, messageId, false);
+      break;
+    case "pay_now":
+      await transactionInitiator(bot , chatId);
       break;
     case "back_to_main":
       await bot.editMessageText(MESSAGE_TEMPLATES.mainMenu, {

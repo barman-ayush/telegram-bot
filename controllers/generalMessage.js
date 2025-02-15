@@ -15,6 +15,7 @@ const generalMessageController = async (bot, msg) => {
       lastMessage: msg.message_id,
       productSelection: {quantity : 1 , product_name : "" , months : 1 , eachCost : 0},
       activeProducts: [],
+      transactionMessageId : 0
     };
     store.setUser(chatId, isUserActive);
   }
