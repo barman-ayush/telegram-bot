@@ -1,6 +1,8 @@
 const product_1_selection_menu = require("./reproAccess");
 const store = require("../db/store");
 const { changeQuantity } = require("./cartHandler");
+const { KEYBOARD_BUTTONS, MESSAGE_TEMPLATES } = require("../utils/constants");
+
 
 const callbackHandler = async (bot, query) => {
   const chatId = query.message.chat.id;
@@ -10,9 +12,6 @@ const callbackHandler = async (bot, query) => {
     case "product_1_selection":
       await product_1_selection_menu(bot, chatId, messageId);
       // await bot.sendMessage(chatId , "Hello")
-      break;
-    case "ruscanpro":
-      await bot.sendMessage(chatId, "RuScanPro information...");
       break;
     case "dec_bot":
       await changeQuantity(bot, chatId, -1, messageId, true);
@@ -25,6 +24,16 @@ const callbackHandler = async (bot, query) => {
       break;
     case "inc_month":
       await changeQuantity(bot, chatId, +1, messageId, false);
+      break;
+    case "back_to_main":
+      await bot.editMessageText(MESSAGE_TEMPLATES.mainMenu, {
+        chat_id: chatId,
+        message_id: messageId,
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: KEYBOARD_BUTTONS.mainMenu,
+        },
+      });
       break;
     case "my_links":
       await bot.sendMessage(chatId, "Your links...");
