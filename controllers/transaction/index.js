@@ -4,10 +4,10 @@ const { TransactionMonitor } = require("./TransactionMonitor");
 const { ethers } = require("ethers");
 
 async function main(bot, chatId, messageId) {
-    await bot.editMessageText("🔄 Starting payment verification system...", {
-        chat_id: chatId,
-        message_id: messageId,
-    });
+    // await bot.editMessageText("🔄 Starting payment verification system...", {
+    //     chat_id: chatId,
+    //     message_id: messageId,
+    // });
 
     const monitor = new TransactionMonitor(config.rpcUrl, bot, chatId, messageId);
     let cleanupCalled = false;
@@ -37,10 +37,10 @@ async function main(bot, chatId, messageId) {
         process.exit(0);
     });
 
-    const senderAddress = "0x31f98d2b763fef754233a10ccb404120e8b91abf";
+    const senderAddress =  "0xFdBA275E47e3B56A5B5b0dC6765CAdB2D178e21e";
     if (!senderAddress || !ethers.isAddress(senderAddress)) {
         await bot.editMessageText(
-            "❌ Invalid sender address provided\nUsage: node src/index.js <sender-address>", {
+            "❌ Invalid sender address provided\n", {
                 chat_id: chatId,
                 message_id: messageId,
             }

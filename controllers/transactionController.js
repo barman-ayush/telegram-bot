@@ -13,7 +13,7 @@ const transactionInitiator = async (bot, chatId) => {
       },
     }
   );
-  console.log("[SENT_MESSAGE] : " , sentMessage)
+  console.log("[SENT_MESSAGE] : ", sentMessage);
   const messageId = sentMessage.message_id;
   let userData = store.getUser(chatId);
   if (!userData) {
@@ -22,17 +22,17 @@ const transactionInitiator = async (bot, chatId) => {
       message_id: messageId,
     });
     await bot.deleteMessage(chatId, messageId);
-}
-userData.transactionMessageId = messageId;
-store.setUser(chatId , userData);
-main(bot , chatId, messageId)
+  }
+  userData.transactionMessageId = messageId;
+  store.setUser(chatId, userData);
+  main(bot, chatId, messageId);
 };
 
-const updateTransactionState = async (bot , chatId , messageId , message) => {
-    await bot.editMessageText(message, {
-      chat_id: chatId,
-      message_id: messageId,
-    });
-}
+const updateTransactionState = async (bot, chatId, messageId, message) => {
+  await bot.editMessageText(message, {
+    chat_id: chatId,
+    message_id: messageId,
+  });
+};
 
-module.exports = {transactionInitiator , updateTransactionState};
+module.exports = { transactionInitiator, updateTransactionState };

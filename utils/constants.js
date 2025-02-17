@@ -6,19 +6,24 @@ const KEYBOARD_BUTTONS = {
       { text: "ℹ️ About", callback_data: "about" },
       { text: "📨 Contact", callback_data: "contact" },
     ],
-    [
-      { text: "🎁 Free Bots", callback_data: "free_bots" },
-      { text: "🎁 Free Maestro Pro", callback_data: "free_maestro" },
-    ],
-    [{ text: "📗 Docs", callback_data: "docs" }],
+    // [
+    //   { text: "🎁 Free Bots", callback_data: "free_bots" },
+    //   { text: "🎁 Free Maestro Pro", callback_data: "free_maestro" },
+    // ],
+    // [{ text: "📗 Docs", callback_data: "docs" }],
   ],
-  product_1: (productName, quantity, months) => {
+  cancel_markup: {
+    inline_keyboard: [
+      [{ text: "Cancel", callback_data: "cancel_transaction" }],
+    ],
+  },
+  product_1: (months = 1) => {
     const markup = [
-      [
-        { text: "⬅️", callback_data: "dec_bot" },
-        { text: `${quantity}x ${productName}`, callback_data: "bot_info" },
-        { text: "➡️", callback_data: "inc_bot" },
-      ],
+      // [
+      //   { text: "⬅️", callback_data: "dec_bot" },
+      //   { text: `${quantity}x ${productName}`, callback_data: "bot_info" },
+      //   { text: "➡️", callback_data: "inc_bot" },
+      // ],
       [
         { text: "⬅️", callback_data: "dec_month" },
         { text: `${months}x Month`, callback_data: "duration_info" },
@@ -31,22 +36,28 @@ const KEYBOARD_BUTTONS = {
   },
 };
 
+const MessageTimeoutInSeconds = 10;
+
 const MESSAGE_TEMPLATES = {
-  mainMenu: `🛒 <b>Your selection:</b>
-            └ 1x Full RuPro Access
-            └ 1x Custom Bot
-            └ 1x Month Access
+  mainMenu: (userName) => {
+    const mainMenuText = `
+    🌟 *Welcome to JinoLabs* 🌟
+    ━━━━━━━━━━━━━━━━
 
-            💰 <b>Total:</b> 0.20Ξ
+    👋 Hello ${userName}!
 
-            In order to proceed with your payment:
-            Please send <code>0.20Ξ</code> to the address below:
+    🤖 *Research Bots Available*
+    Find the best plays with our advanced analysis tools!
 
-            👉 <code>0x871DA0aA6a9Cc4G20F2809aEbEA818B3Ada8e92E</code>
+    📊 *Current Access Status*
+    ⚠️ No active pass detected
 
-            Once payment is detected, you will receive invite links to all channels and bots.
+    ━━━━━━━━━━━━━━━━
+    _Use /help to see available commands_
+        `.trim();
 
-            ⚠️ Make sure to send Ethereum using <b>ETH</b> or <b>BASE</b> networks only.`,
+    return mainMenuText;
+  },
   product_1: `💎 Your current active products:
             No Passes or Products ⛔
 
@@ -61,11 +72,30 @@ const MESSAGE_TEMPLATES = {
 
             
             Use the buttons below 👇 to make your selections:`,
+  product_cart: (userData, quantity = 1, months = 1) => {
+    const totalCost = (
+      userData.productSelection.eachCost *
+      quantity *
+      months
+    ).toFixed(4);
+
+    return `
+━━━━ 🛒 Order Details ━━━━
+
+🏷️ <b>Product:</b> ${userData.productSelection.product_name}
+
+📦 <b>Quantity:</b> ${quantity}
+⏳ <b>Duration:</b> ${months} month${months > 1 ? "s" : ""}
+💰 <b>Total Cost:</b> ${totalCost}Ξ
+
+━━━━━━━━━━━━━━━━━━━
+<i>Please verify your order details</i>
+`.trim();
+  },
 };
 
 module.exports = {
   MESSAGE_TEMPLATES,
   KEYBOARD_BUTTONS,
+  MessageTimeoutInSeconds,
 };
-
-// 🎁 Total: ${PRODUCTS.RUPRO.price}Ξ
