@@ -76,6 +76,7 @@ class TransactionMonitor {
 
           this.blocksChecked++;
           if (!this.realTimeMessageId) {
+            // If the data is sent for the first time or first block is being checked
             const sentMessage = await this.bot.sendMessage(
               this.chatId,
               `🔍 Monitoring Transactions...\n` +
@@ -101,6 +102,9 @@ class TransactionMonitor {
               }
             );
           }
+
+
+          // If we have checked blocks equal to the max blocks that could have been checked !!!
 
           if (this.blocksChecked > criteria.maxBlocksToWait) {
             if (this.foundTransactions.length > 0) {
@@ -295,7 +299,10 @@ class TransactionMonitor {
       chat_id: this.chatId,
       message_id: this.messageId,
     });
-    await this.bot.deleteMessage(this.chatId, this.realTimeMessageId);
+    if(!this.isDestroyed){
+        await this.bot.deleteMessage(this.chatId, this.realTimeMessageId);
+        await this.bot.deleteMessage(this.chatId, this.messageId);
+    }
     this.isDestroyed = true;
     await new Promise((resolve) => setTimeout(resolve, 100));
     this.provider.removeAllListeners();

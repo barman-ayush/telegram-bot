@@ -1,6 +1,6 @@
 const store = require("../db/store");
-const { main } = require("./transaction");
-const transactionInitiator = async (bot, chatId) => {
+const { currentUserTransactionControllerState } = require("./transaction");
+const transactionInitiator = async (bot, chatId , senderAddress) => {
   const sentMessage = await bot.sendMessage(
     chatId,
     "Processing your transaction...",
@@ -25,7 +25,8 @@ const transactionInitiator = async (bot, chatId) => {
   }
   userData.transactionMessageId = messageId;
   store.setUser(chatId, userData);
-  main(bot, chatId, messageId);
+  currentUserTransactionControllerState.setInstanceParameters(bot , chatId);
+  await currentUserTransactionControllerState.main(senderAddress ,messageId);
 };
 
 const updateTransactionState = async (bot, chatId, messageId, message) => {

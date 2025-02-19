@@ -1,6 +1,46 @@
 msg.chat.id => chat id
 msg.message_id => message id
 
+User schema : 
+      chatId,
+      lastMessage: msg.message_id,
+      productSelection: {
+        quantity: 1,
+        product_name: "",
+        months: 1,
+        eachCost: 0,
+      },
+      activeProducts: [],
+      transactionMessageId: 0,
+      username: msg.from.username || msg.from.first_name,
+
+
+
+
+msg interface : 
+{
+  message_id: 319,
+  from: {
+    id: 5417774567,
+    is_bot: false,
+    first_name: 'Deepshikha',
+    last_name: 'Mishra',
+    username: 'deepshikha_mishra_090',
+    language_code: 'en'
+  },
+  chat: {
+    id: 5417774567,
+    first_name: 'Deepshikha',
+    last_name: 'Mishra',
+    username: 'deepshikha_mishra_090',
+    type: 'private'
+  },
+  date: 1739744767,
+  text: 'Hello'
+}
+
+
+
 query Object Structure : 
 {
   message_id: 203,

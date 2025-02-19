@@ -21,10 +21,6 @@ module.exports = {
 
     await bot.editMessageText(
       MESSAGE_TEMPLATES.product_cart(userData , quantity , months)
-    // `
-    // Product : ${userData.productSelection.product_name}
-    // Total Cost : ${userData.productSelection.eachCost * quantity * months}Ξ 
-    // `
     , {
       chat_id: chatId,
       message_id: messageId,

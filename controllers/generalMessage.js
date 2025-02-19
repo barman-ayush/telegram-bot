@@ -21,6 +21,8 @@ Enter /help for help
   if (!isUserActive) {
     console.log("Creating User ...");
     isUserActive = {
+      chatId,
+      lastTransactionWalletAddress : "",
       lastMessage: msg.message_id,
       productSelection: {
         quantity: 1,
