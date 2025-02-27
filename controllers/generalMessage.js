@@ -6,11 +6,12 @@ const generalMessageController = async (bot, msg) => {
     console.log("Old message");
     await bot.sendMessage(msg.chat.id , 
       `
-Please Start a new Conversation
+✨ Welcome! ✨  
 
-Enter /start to start a new chat 
+🔹 Enter **/start** to begin a new chat.  
+🔹 Enter **/help** for assistance.  
 
-Enter /help for help
+We're here to help—let's get started! 🚀  
       `
     )
     return;
