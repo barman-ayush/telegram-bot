@@ -72,19 +72,17 @@ const MESSAGE_TEMPLATES = {
 
             
             Use the buttons below 👇 to make your selections:`,
-  product_cart: (userData, quantity = 1, months = 1) => {
+  product_cart: (userData, months = 1) => {
     const totalCost = (
-      userData.productSelection.eachCost *
-      quantity *
+      userData.cost *
       months
     ).toFixed(4);
 
     return `
 ━━━━ 🛒 Order Details ━━━━
 
-🏷️ <b>Product:</b> ${userData.productSelection.product_name}
+🏷️ <b>Product:</b> ${userData.productName}
 
-📦 <b>Quantity:</b> ${quantity}
 ⏳ <b>Duration:</b> ${months} month${months > 1 ? "s" : ""}
 💰 <b>Total Cost:</b> ${totalCost}Ξ
 
@@ -92,6 +90,30 @@ const MESSAGE_TEMPLATES = {
 <i>Please verify your order details</i>
 `.trim();
   },
+  helper : 
+  `
+  ✨ Welcome! ✨  
+  
+  🔹 Enter **/start** to begin a new chat.  
+  🔹 Enter **/help** for assistance.  
+  
+  We're here to help—let's get started! 🚀  
+  `,
+  payment : 
+  `
+  💰 **Payment Instruction** 💰  
+
+Please send your wallet address in the following format:  
+
+📌 **Format:**  
+/pay <your_wallet_address  
+
+📌 **Example:**  
+/pay 0xE140E27184806217656F1e5E1f576b0885294563 
+
+Make sure to enter the correct wallet address to avoid any issues. 🚀  
+
+  `
 };
 
 module.exports = {

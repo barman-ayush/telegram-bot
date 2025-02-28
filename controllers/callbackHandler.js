@@ -34,32 +34,14 @@ Enter /help for help
     case "product_1_selection":
       await product_1_selection_menu(bot, chatId, messageId);
       break;
-    case "dec_bot":
-      await changeQuantity(bot, chatId, -1, messageId, true);
-      break;
-    case "inc_bot":
-      await changeQuantity(bot, chatId, +1, messageId, true);
-      break;
     case "dec_month":
-      await changeQuantity(bot, chatId, -1, messageId, false);
+      await changeQuantity(bot, chatId, -1, messageId);
       break;
     case "inc_month":
-      await changeQuantity(bot, chatId, +1, messageId, false);
+      await changeQuantity(bot, chatId, +1, messageId);
       break;
     case "pay_now":
-      await bot.sendMessage(
-        chatId,
-        `
-Send You Wallet Address which you will use to pay in the following format : 
-
-/pay <sender_wallet_address>
-
-Eg . 
-
-/pay 0xE140E27184806217656F1e5E1f576b0885294563
-      `
-      );
-      // await transactionInitiator(bot , chatId);
+      await bot.sendMessage(chatId,MESSAGE_TEMPLATES.payment);
       break;
     case "back_to_main":
       await bot.editMessageText(

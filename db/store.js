@@ -25,6 +25,8 @@ class Store {
     getUser(userId) {
         return this.users.get(userId);
     }
+
+
 }
 
 // Create and export a single instance
